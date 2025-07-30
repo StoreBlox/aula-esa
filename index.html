@@ -1,0 +1,536 @@
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Award, MapPin, Clock, Users, Star, Play, CheckCircle, Target, Shield, GraduationCap } from 'lucide-react';
+
+const ESACourse = () => {
+  const [currentModule, setCurrentModule] = useState(0);
+  const [completedModules, setCompletedModules] = useState([]);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [progress, setProgress] = useState(0);
+
+  const modules = [
+    {
+      id: 0,
+      title: "Introdução à ESA",
+      icon: <Shield className="w-6 h-6" />,
+      duration: "15 min",
+      content: {
+        subtitle: "O que é a Escola de Sargentos das Armas?",
+        description: "A ESA é uma instituição militar de ensino do Exército Brasileiro, responsável pela formação de sargentos especialistas em diversas áreas técnicas.",
+        keyPoints: [
+          "Fundada em 1944 em Três Corações - MG",
+          "Forma sargentos temporários e de carreira",
+          "Oferece formação técnica militar especializada",
+          "Reconhecida nacionalmente pela qualidade do ensino"
+        ],
+        image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=300&fit=crop"
+      }
+    },
+    {
+      id: 1,
+      title: "História e Tradição",
+      icon: <BookOpen className="w-6 h-6" />,
+      duration: "20 min",
+      content: {
+        subtitle: "Mais de 80 anos formando líderes",
+        description: "A ESA possui uma rica história na formação de sargentos altamente qualificados para o Exército Brasileiro.",
+        keyPoints: [
+          "Criada pelo Decreto-Lei nº 6.397 de 1944",
+          "Inicialmente funcionou no Rio de Janeiro",
+          "Transferida para Três Corações em 1949",
+          "Modernizada constantemente ao longo das décadas"
+        ],
+        timeline: [
+          { year: "1944", event: "Fundação da ESA" },
+          { year: "1949", event: "Transferência para Três Corações" },
+          { year: "1980", event: "Ampliação dos cursos oferecidos" },
+          { year: "2000", event: "Modernização tecnológica" }
+        ],
+        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=300&fit=crop"
+      }
+    },
+    {
+      id: 2,
+      title: "Cursos e Especialidades",
+      icon: <GraduationCap className="w-6 h-6" />,
+      duration: "25 min",
+      content: {
+        subtitle: "Diversidade de áreas de formação",
+        description: "A ESA oferece cursos em múltiplas especialidades técnicas, preparando sargentos para diferentes funções no Exército.",
+        specialties: [
+          {
+            name: "Comunicações",
+            description: "Sistemas de comunicação militar",
+            duration: "12 meses",
+            vacancies: "80 vagas/ano"
+          },
+          {
+            name: "Material Bélico",
+            description: "Manutenção de armamentos",
+            duration: "12 meses",
+            vacancies: "60 vagas/ano"
+          },
+          {
+            name: "Topografia",
+            description: "Cartografia e levantamentos",
+            duration: "12 meses",
+            vacancies: "40 vagas/ano"
+          },
+          {
+            name: "Música",
+            description: "Bandas militares",
+            duration: "18 meses",
+            vacancies: "30 vagas/ano"
+          }
+        ],
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=300&fit=crop"
+      }
+    },
+    {
+      id: 3,
+      title: "Processo Seletivo",
+      icon: <Target className="w-6 h-6" />,
+      duration: "30 min",
+      content: {
+        subtitle: "Como ingressar na ESA",
+        description: "O processo seletivo é rigoroso e busca candidatos com perfil adequado para a carreira militar.",
+        requirements: [
+          "Ensino Médio completo",
+          "Idade entre 17 e 24 anos",
+          "Altura mínima: 1,60m (homens) e 1,55m (mulheres)",
+          "Aptidão física e psicológica"
+        ],
+        phases: [
+          { phase: "1ª Fase", description: "Exame Intelectual (EI)" },
+          { phase: "2ª Fase", description: "Inspeção de Saúde (IS)" },
+          { phase: "3ª Fase", description: "Exame de Aptidão Física (EAF)" },
+          { phase: "4ª Fase", description: "Avaliação Psicológica (AP)" }
+        ],
+        image: "https://images.unsplash.com/photo-1434596922112-19c563067271?w=600&h=300&fit=crop"
+      }
+    },
+    {
+      id: 4,
+      title: "Vida na ESA",
+      icon: <Users className="w-6 h-6" />,
+      duration: "20 min",
+      content: {
+        subtitle: "Rotina e infraestrutura",
+        description: "A vida na ESA combina formação militar rigorosa com excelente infraestrutura de ensino e convivência.",
+        facilities: [
+          "Alojamentos modernos",
+          "Laboratórios especializados",
+          "Centro esportivo completo",
+          "Biblioteca com vasto acervo",
+          "Enfermaria médica",
+          "Refeitório e área de lazer"
+        ],
+        routine: [
+          { time: "06:00", activity: "Alvorada e Educação Física" },
+          { time: "08:00", activity: "Café da manhã" },
+          { time: "09:00", activity: "Aulas teóricas" },
+          { time: "12:00", activity: "Almoço e descanso" },
+          { time: "14:00", activity: "Aulas práticas" },
+          { time: "18:00", activity: "Jantar" },
+          { time: "20:00", activity: "Estudo dirigido" },
+          { time: "22:00", activity: "Silêncio" }
+        ],
+        image: "https://images.unsplash.com/photo-1523050854058-8df90110c9d1?w=600&h=300&fit=crop"
+      }
+    }
+  ];
+
+  const quiz = [
+    {
+      question: "Em que ano foi fundada a ESA?",
+      options: ["1942", "1944", "1946", "1948"],
+      correct: 1
+    },
+    {
+      question: "Onde está localizada atualmente a ESA?",
+      options: ["Rio de Janeiro - RJ", "Três Corações - MG", "Brasília - DF", "São Paulo - SP"],
+      correct: 1
+    },
+    {
+      question: "Qual a idade máxima para ingressar na ESA?",
+      options: ["22 anos", "23 anos", "24 anos", "25 anos"],
+      correct: 2
+    }
+  ];
+
+  useEffect(() => {
+    const completed = completedModules.length;
+    const total = modules.length;
+    setProgress((completed / total) * 100);
+  }, [completedModules]);
+
+  const completeModule = (moduleId) => {
+    if (!completedModules.includes(moduleId)) {
+      setCompletedModules([...completedModules, moduleId]);
+    }
+  };
+
+  const handleQuizAnswer = (questionIndex, answerIndex) => {
+    setQuizAnswers({
+      ...quizAnswers,
+      [questionIndex]: answerIndex
+    });
+  };
+
+  const calculateQuizScore = () => {
+    let correct = 0;
+    quiz.forEach((q, index) => {
+      if (quizAnswers[index] === q.correct) {
+        correct++;
+      }
+    });
+    return (correct / quiz.length) * 100;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-yellow-600">
+      {/* Header */}
+      <header className="bg-black/20 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-green-600 rounded-xl flex items-center justify-center">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Escola de Sargentos das Armas</h1>
+                <p className="text-yellow-200">Curso Preparatório Completo - ESA 2025</p>
+              </div>
+            </div>
+            
+            <div className="text-right">
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                <p className="text-white font-semibold">Progresso do Curso</p>
+                <div className="w-48 bg-gray-700 rounded-full h-3 mt-2">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-400 to-green-500 h-3 rounded-full transition-all duration-500"
+                    style={{width: `${progress}%`}}
+                  ></div>
+                </div>
+                <p className="text-yellow-200 text-sm mt-1">{Math.round(progress)}% Concluído</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar - Módulos */}
+          <div className="lg:col-span-1">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-6 sticky top-32">
+              <h2 className="text-xl font-bold text-white mb-6 flex items-center">
+                <BookOpen className="w-5 h-5 mr-2" />
+                Módulos do Curso
+              </h2>
+              
+              <div className="space-y-3">
+                {modules.map((module, index) => (
+                  <button
+                    key={module.id}
+                    onClick={() => setCurrentModule(index)}
+                    className={`w-full text-left p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                      currentModule === index
+                        ? 'bg-gradient-to-r from-yellow-500 to-green-600 text-white shadow-lg'
+                        : completedModules.includes(index)
+                        ? 'bg-green-600/30 text-green-200 border border-green-500/50'
+                        : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        {module.icon}
+                        <div>
+                          <p className="font-semibold text-sm">{module.title}</p>
+                          <p className="text-xs opacity-75 flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {module.duration}
+                          </p>
+                        </div>
+                      </div>
+                      {completedModules.includes(index) && (
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => setShowQuiz(true)}
+                  className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Award className="w-5 h-5" />
+                    <div>
+                      <p className="font-semibold text-sm">Quiz Final</p>
+                      <p className="text-xs opacity-75">Teste seus conhecimentos</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Conteúdo Principal */}
+          <div className="lg:col-span-3">
+            {!showQuiz ? (
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden">
+                {/* Header do Módulo */}
+                <div className="relative">
+                  <img 
+                    src={modules[currentModule].content.image} 
+                    alt={modules[currentModule].title}
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6">
+                    <h2 className="text-3xl font-bold text-white mb-2">{modules[currentModule].title}</h2>
+                    <p className="text-yellow-200 text-lg">{modules[currentModule].content.subtitle}</p>
+                  </div>
+                </div>
+
+                {/* Conteúdo */}
+                <div className="p-8">
+                  <p className="text-gray-300 text-lg leading-relaxed mb-8">
+                    {modules[currentModule].content.description}
+                  </p>
+
+                  {/* Pontos-chave */}
+                  {modules[currentModule].content.keyPoints && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <Star className="w-5 h-5 mr-2 text-yellow-400" />
+                        Pontos Principais
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {modules[currentModule].content.keyPoints.map((point, index) => (
+                          <div key={index} className="bg-gradient-to-r from-green-600/20 to-yellow-600/20 rounded-xl p-4 border border-green-500/30">
+                            <p className="text-white">{point}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Timeline (para módulo de História) */}
+                  {modules[currentModule].content.timeline && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Linha do Tempo</h3>
+                      <div className="space-y-4">
+                        {modules[currentModule].content.timeline.map((item, index) => (
+                          <div key={index} className="flex items-center space-x-4">
+                            <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-green-500 rounded-full flex items-center justify-center text-black font-bold">
+                              {item.year}
+                            </div>
+                            <div className="bg-white/10 rounded-xl p-4 flex-1">
+                              <p className="text-white font-semibold">{item.event}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Especialidades (para módulo de Cursos) */}
+                  {modules[currentModule].content.specialties && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Especialidades Oferecidas</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {modules[currentModule].content.specialties.map((specialty, index) => (
+                          <div key={index} className="bg-gradient-to-r from-blue-600/20 to-green-600/20 rounded-xl p-6 border border-blue-500/30">
+                            <h4 className="text-white font-bold text-lg mb-2">{specialty.name}</h4>
+                            <p className="text-gray-300 mb-3">{specialty.description}</p>
+                            <div className="flex justify-between text-sm text-yellow-200">
+                              <span>Duração: {specialty.duration}</span>
+                              <span>{specialty.vacancies}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fases do Processo Seletivo */}
+                  {modules[currentModule].content.phases && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Fases do Concurso</h3>
+                      <div className="space-y-3">
+                        {modules[currentModule].content.phases.map((phase, index) => (
+                          <div key={index} className="bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-xl p-4 border border-red-500/30 flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <p className="text-white font-semibold">{phase.phase}</p>
+                              <p className="text-gray-300">{phase.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Requisitos */}
+                  {modules[currentModule].content.requirements && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Requisitos</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {modules[currentModule].content.requirements.map((req, index) => (
+                          <div key={index} className="bg-white/10 rounded-xl p-4 flex items-center space-x-3">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                            <p className="text-white">{req}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Instalações */}
+                  {modules[currentModule].content.facilities && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Infraestrutura</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {modules[currentModule].content.facilities.map((facility, index) => (
+                          <div key={index} className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 text-center border border-purple-500/30">
+                            <p className="text-white font-semibold">{facility}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rotina */}
+                  {modules[currentModule].content.routine && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold text-white mb-4">Rotina Diária</h3>
+                      <div className="space-y-2">
+                        {modules[currentModule].content.routine.map((item, index) => (
+                          <div key={index} className="bg-white/10 rounded-xl p-4 flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="w-16 h-12 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                {item.time}
+                              </div>
+                              <p className="text-white">{item.activity}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => completeModule(currentModule)}
+                    className={`w-full py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                      completedModules.includes(currentModule)
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gradient-to-r from-yellow-500 to-green-600 text-white hover:from-yellow-600 hover:to-green-700'
+                    }`}
+                  >
+                    {completedModules.includes(currentModule) ? (
+                      <>
+                        <CheckCircle className="w-5 h-5 inline mr-2" />
+                        Módulo Concluído
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-5 h-5 inline mr-2" />
+                        Concluir Módulo
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Quiz */
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+                <div className="text-center mb-8">
+                  <Award className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                  <h2 className="text-3xl font-bold text-white mb-2">Quiz Final - ESA</h2>
+                  <p className="text-gray-300">Teste seus conhecimentos sobre a Escola de Sargentos das Armas</p>
+                </div>
+
+                <div className="space-y-8 mb-8">
+                  {quiz.map((question, qIndex) => (
+                    <div key={qIndex} className="bg-white/10 rounded-xl p-6 border border-white/20">
+                      <h3 className="text-white font-bold text-lg mb-4">
+                        {qIndex + 1}. {question.question}
+                      </h3>
+                      <div className="space-y-3">
+                        {question.options.map((option, oIndex) => (
+                          <button
+                            key={oIndex}
+                            onClick={() => handleQuizAnswer(qIndex, oIndex)}
+                            className={`w-full text-left p-4 rounded-lg transition-all duration-300 ${
+                              quizAnswers[qIndex] === oIndex
+                                ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white'
+                                : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                            }`}
+                          >
+                            {String.fromCharCode(65 + oIndex)}. {option}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between">
+                  <button
+                    onClick={() => setShowQuiz(false)}
+                    className="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-all duration-300"
+                  >
+                    Voltar aos Módulos
+                  </button>
+                  
+                  {Object.keys(quizAnswers).length === quiz.length && (
+                    <div className="text-center">
+                      <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl">
+                        <p className="text-lg font-bold">Sua Pontuação: {calculateQuizScore().toFixed(0)}%</p>
+                        <p className="text-sm">
+                          {calculateQuizScore() >= 70 ? "Parabéns! Você está preparado!" : "Continue estudando!"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Informações Extras */}
+      <div className="bg-black/20 backdrop-blur-lg border-t border-white/10 mt-12">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <MapPin className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
+              <h3 className="text-white font-bold text-lg mb-2">Localização</h3>
+              <p className="text-gray-300">Três Corações - MG</p>
+              <p className="text-gray-400 text-sm">Sul de Minas Gerais</p>
+            </div>
+            <div className="text-center">
+              <Users className="w-12 h-12 text-green-400 mx-auto mb-3" />
+              <h3 className="text-white font-bold text-lg mb-2">Formandos/Ano</h3>
+              <p className="text-gray-300">~500 sargentos</p>
+              <p className="text-gray-400 text-sm">Várias especialidades</p>
+            </div>
+            <div className="text-center">
+              <Clock className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+              <h3 className="text-white font-bold text-lg mb-2">Duração</h3>
+              <p className="text-gray-300">12-18 meses</p>
+              <p className="text-gray-400 text-sm">Conforme especialidade</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ESACourse;
